@@ -22,11 +22,11 @@ Test::NoShadow - Fail CI when two distributions provide the same Perl package, o
 
 =head1 VERSION
 
-Version 0.01
+Version 0.001.0
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.001.0';
 
 my @SKIP_DIRS = qw(.git .github .svn CVS blib _build cover_db node_modules .pc);
 
@@ -399,18 +399,10 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 Copyright 2026 Nigel Horne.
 
-Usage is subject to licence terms.
-
-The licence terms of this software are as follows:
-
-=over 4
-
-=item * Personal single user, single computer use: GPL2
-
-=item * All other users (including Commercial, Charity, Educational, Government)
-  must apply in writing for a licence for use from Nigel Horne at the
-  above e-mail.
-
-=back
+Usage is subject to the GPL2 licence terms.
+If you use it,
+please let me know.
 
 =cut
+
+1;

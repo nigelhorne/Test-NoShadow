@@ -1,30 +1,32 @@
-# NAME
+## Name
 
 Test::NoShadow - Fail CI when two distributions provide the same Perl package, or when t/ exercises a copy other than the one under test
 
-# VERSION
+## Version
 
-Version 0.01
+Version 0.001.0
 
-# SYNOPSIS
+## Synopsis
 
-    # In your CI, over a directory of checkouts:
-    use Test::More;
-    use Test::NoShadow qw(shadowed_ok lib_ok find_shadows);
+```perl
+# In your CI, over a directory of checkouts:
+use Test::More;
+use Test::NoShadow qw(shadowed_ok lib_ok find_shadows);
 
-    shadowed_ok('/home/njh');    # fails if any Perl package is provided by two checkouts
+shadowed_ok('/home/njh');    # fails if any Perl package is provided by two checkouts
 
-    # In a distribution's own t/, after using its modules:
-    use My::Module;
-    lib_ok('My::Module');        # fails if My::Module came from anywhere but this distribution
+# In a distribution's own t/, after using its modules:
+use My::Module;
+lib_ok('My::Module');        # fails if My::Module came from anywhere but this distribution
 
-    # Or inspect the data yourself:
-    my $shadows = find_shadows('/home/njh');
-    foreach my $package (sort keys %$shadows) {
-        diag("$package: @{ $shadows->{$package} }");
-    }
+# Or inspect the data yourself:
+my $shadows = find_shadows('/home/njh');
+foreach my $package (sort keys %$shadows) {
+    diag("$package: @{ $shadows->{$package} }");
+}
+```
 
-# DESCRIPTION
+## Description
 
 `Test::NoShadow` fails your test suite when two distributions provide the same
 Perl package, and when a distribution's tests exercise a copy other than the
@@ -40,14 +42,14 @@ relative, [Test::CleanNamespaces](https://metacpan.org/pod/Test%3A%3ACleanNamesp
 
 Two checks are provided:
 
-- [shadowed_ok](https://metacpan.org/pod/Test%3A%3ANoShadow#shadowed_ok) - a directory of checkouts (or the installed `@INC`)
+- ["shadowed\_ok"](#shadowed_ok) - a directory of checkouts (or the installed `@INC`)
 must not contain a Perl package in more than one place
-- [lib\_ok](https://metacpan.org/pod/Test%3A%3ANoShadow#lib_ok) - each named module must have been loaded from the
+- ["lib\_ok"](#lib_ok) - each named module must have been loaded from the
 distribution's own `lib/` or `blib/lib`
 
-# FUNCTIONS/METHODS
+## Functions/Methods
 
-## shadowed\_ok @dirs, [ \\%options ]
+### Shadowed\_Ok \[@Dirs, \[ \\%Options \]\]
 
 Scans each directory (recursively) for `.pm` files and extracts the package
 names they declare. Passes if no Perl package is declared in more than one
@@ -55,7 +57,9 @@ file; otherwise fails, with a diagnostic naming both providers.
 
 With no directories given, `@INC` is scanned - for example:
 
-    prove -Ilib t/shadow.t
+```
+prove -Ilib t/shadow.t
+```
 
 The following options are recognised in the optional hash reference:
 
@@ -74,7 +78,7 @@ reported alongside copies under `lib`.
 
 Returns true on success, false on failure.
 
-## lib\_ok @modules, [ \\%options ]
+### Lib\_Ok @Modules, \[ \\%Options \]
 
 For use in the distribution's own tests, after the modules have been
 `use`d. Passes if each named module was loaded from this distribution's
@@ -91,13 +95,13 @@ that count as "the copy under test", default `[qw(lib blib/lib)]`
 
 Returns true if all modules passed.
 
-## find\_shadows $dir, [ \\%options ]
+### Find\_Shadows $Dir, \[ \\%Options \]
 
 The non-TAP interface: returns a hash reference mapping each shadowed
 package name to a sorted array reference of the files that declare it.
-Accepts the same options as [shadowed\_ok](https://metacpan.org/pod/Test%3A%3ANoShadow#shadowed_ok).
+Accepts the same options as ["shadowed\_ok"](#shadowed_ok).
 
-# DIAGNOSTICS
+## Diagnostics
 
 - `No shadowed Perl packages`
 
@@ -119,10 +123,10 @@ Accepts the same options as [shadowed\_ok](https://metacpan.org/pod/Test%3A%3ANo
 
 - `Test::NoShadow: $root is not a directory`
 
-    The directory passed to [shadowed\_ok](https://metacpan.org/pod/Test%3A%3ANoShadow#shadowed_ok) or [find\_shadows](https://metacpan.org/pod/Test%3A%3ANoShadow#find_shadows) does not
+    The directory passed to ["shadowed\_ok"](#shadowed_ok) or ["find\_shadows"](#find_shadows) does not
     exist.
 
-# LIMITATIONS
+## Limitations
 
 - Package detection is a line-based heuristic: `package Foo::Bar;`,
 `package Foo::Bar 1.23;` and `package Foo::Bar {` are recognised, but a
@@ -130,13 +134,13 @@ declaration split across lines, or the string `package Foo::Bar;` inside a
 here-document or data section, will confuse it.
 - Packages provided only by an XS boot file, without a `.pm`, are not
 seen.
-- Files under `t/` that intentionally duplicate a `lib` package
+- Files under `t/` that intentionally duplicate a `lib/` package
 (test fixtures) are reported as shadows. Use the `ignore` option to exclude
 them.
 - Scanning a large `@INC` reads every `.pm` file in it and can take
 a few seconds.
 
-# SEE ALSO
+## See Also
 
 [Test::Which](https://metacpan.org/pod/Test%3A%3AWhich) - skip tests if external programs are missing from PATH
 
@@ -144,19 +148,14 @@ a few seconds.
 
 [Test::Builder](https://metacpan.org/pod/Test%3A%3ABuilder) - the test framework this module is built on
 
-# AUTHOR
+## Author
 
 Nigel Horne, `<njh at nigelhorne.com>`
 
-# LICENCE AND COPYRIGHT
+## Licence and Copyright
 
 Copyright 2026 Nigel Horne.
 
-Usage is subject to licence terms.
-
-The licence terms of this software are as follows:
-
-- Personal single user, single computer use: GPL2
-- All other users (including Commercial, Charity, Educational, Government)
-must apply in writing for a licence for use from Nigel Horne at the
-above e-mail.
+Usage is subject to the GPL2 licence terms.
+If you use it,
+please let me know.

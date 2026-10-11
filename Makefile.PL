@@ -16,7 +16,7 @@ WriteMakefile(
 	VERSION_FROM => 'lib/Test/NoShadow.pm',
 	ABSTRACT_FROM => 'lib/Test/NoShadow.pm',
 	AUTHOR => 'Nigel Horne <njh@nigelhorne.com>',
-	LICENSE => 'GPL',
+	LICENSE => 'gpl_2',
 	MIN_PERL_VERSION => '5.008',
 	PREREQ_PM => {
 		'Cwd' => 0,

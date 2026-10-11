@@ -1,4 +1,5 @@
 Changes
+cpanfile
 lib/Test/NoShadow.pm
 LICENSE
 Makefile.PL

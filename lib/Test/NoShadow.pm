@@ -92,7 +92,9 @@ The following options are recognised in the optional hash reference:
 
 =item * C<ignore> - array reference of regexps. Each is matched against
 both the C<"provider/package"> pair and the file's path; if either matches,
-the file is excluded, e.g. C<< { ignore => [qr{^WWW-Scrape-BillionGraves/}, qr{/t/lib/}] } >>
+the file is excluded, e.g. C<< { ignore => [qr{^WWW-Scrape-BillionGraves/}, qr{/t/lib/}] } >>.
+The file's path is also matched with backslashes converted to forward
+slashes, so patterns such as C<qr{/t/lib/}> work on Windows as well
 
 =back
 
@@ -187,9 +189,12 @@ sub _scan {
 
 			my $provider = _provider_for($abs, $name);
 			my $file = abs_path($name) || $name;
+			# Match ignore patterns against the path with backslashes as
+			# slashes too, so qr{/t/lib/} works on Windows
+			(my $fwd = $file) =~ s{\\}{/}g;
 
 			foreach my $package (@{_packages_in_file($name)}) {
-				if($opts->{'ignore'} && grep { "$provider/$package" =~ $_ || $file =~ $_ } @{$opts->{'ignore'}}) {
+				if($opts->{'ignore'} && grep { "$provider/$package" =~ $_ || $file =~ $_ || $fwd =~ $_ } @{$opts->{'ignore'}}) {
 					next;
 				}
 				$found{$package}{$file} = $provider;
@@ -279,7 +284,13 @@ sub lib_ok {
 	}
 
 	my $dir = abs_path(exists($opts{'dir'}) ? $opts{'dir'} : '.');
-	my @libs = map { defined($dir) ? abs_path(File::Spec->catdir($dir, $_)) : undef } (@{$opts{'lib'} || [qw(lib blib/lib)]});
+	# abs_path returns undef for directories that do not exist (blib/lib is
+	# absent when tests are run from the source tree rather than from a
+	# built distribution), so fall back to a normalised absolute path
+	my @libs = map {
+		my $path = File::Spec->catdir(defined($dir) ? $dir : File::Spec->curdir(), $_);
+		abs_path($path) || File::Spec->rel2abs($path);
+	} (@{$opts{'lib'} || [qw(lib blib/lib)]});
 
 	my $return = 1;
 	foreach my $module (@modules) {

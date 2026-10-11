@@ -29,6 +29,17 @@ subtest 'a shadowing copy is reported' => sub {
 	like($diag, qr/Test.NoShadow.Fake\.pm/, 'names the copy that was loaded');
 };
 
+subtest 'missing lib directories do not warn' => sub {
+	my @warnings;
+	local $SIG{__WARN__} = sub { push @warnings, @_ };
+	my ($premature, @results) = run_tests(sub {
+		lib_ok('Test::NoShadow::Fake', { lib => [qw(no such lib)] });
+	});
+
+	is($results[0]{ok}, 0, 'still fails when the module is outside every lib');
+	is(scalar(@warnings), 0, 'no warnings were emitted for lib directories that do not exist') or diag(@warnings);
+};
+
 subtest 'a module that was not loaded is reported' => sub {
 	my ($premature, @results) = run_tests(sub { lib_ok('Test::NoShadow::NoSuchModule') });
 

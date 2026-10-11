@@ -61,7 +61,9 @@ The following options are recognised in the optional hash reference:
 
 - `ignore` - array reference of regexps. Each is matched against
 both the `"provider/package"` pair and the file's path; if either matches,
-the file is excluded, e.g. `{ ignore => [qr{^WWW-Scrape-BillionGraves/}, qr{/t/lib/}] }`
+the file is excluded, e.g. `{ ignore => [qr{^WWW-Scrape-BillionGraves/}, qr{/t/lib/}] }`.
+The file's path is also matched with backslashes converted to forward
+slashes, so patterns such as `qr{/t/lib/}` work on Windows as well
 
 Each top-level directory beneath the scanned directory is treated as a
 "provider" (in this workspace, a checkout); files directly beneath the

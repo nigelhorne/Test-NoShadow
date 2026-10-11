@@ -12,8 +12,12 @@ sub write_pm {
 	my ($root, $package) = @_;
 
 	my @parts = split(/::/, $package);
-	my $file = File::Spec->catfile($root, 'lib', @parts[0 .. $#parts - 1], "$parts[-1].pm");
-	make_path((File::Spec->splitpath($file))[1]);
+	# Build the directory with catdir, not splitpath: on Windows splitpath
+	# returns the directory without the drive, so make_path would create
+	# the tree on the wrong volume and the open below would fail
+	my $dir = File::Spec->catdir($root, 'lib', @parts[0 .. $#parts - 1]);
+	make_path($dir);
+	my $file = File::Spec->catfile($dir, "$parts[-1].pm");
 	open(my $fh, '>', $file) or die "Cannot open $file: $!";
 	print $fh "package $package;\n\nuse strict;\nuse warnings;\n\n1;\n";
 	close($fh);

@@ -1,4 +1,8 @@
 Revision history for Test-NoShadow
 
+0.001.1
+	[ Tests ]
+	- Added t/noshadow.t
+
 0.001.0	Sun Oct 11 02:41:24 PM EDT 2026
 	First draft
